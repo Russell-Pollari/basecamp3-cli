@@ -34,9 +34,21 @@ def todo_list_preview(todo_lists, index):
 	return '\n'.join(todo_titles)
 
 
+def todo_preview(todos, index):
+	if int(index) == 0:
+		return None
+
+	try:
+		todo = todos[int(index) - 1]
+	except:
+		return None
+
+	return todo.description
+
+
 def menu(
 	items,
-	backFunc,
+	backFunc = exit,
 	preview_command = None,
 	title = None
 ):
@@ -61,7 +73,6 @@ def project_menu():
 
 	selected_index = menu(
 		project_names,
-		exit,
 		title='BC',
 		preview_command=lambda index: project_preview(projects, index))
 
@@ -76,7 +87,7 @@ def todo_list_menu(project):
 
 	selected_index = menu(
 		todo_list_titles,
-		project_menu,
+		backFunc=project_menu,
 		title='BC3 > ' + project.name,
 		preview_command=lambda index: todo_list_preview(todo_lists, index))
 
@@ -91,8 +102,9 @@ def todos_menu(todo_list, project):
 
 	selected_index = menu(
 		todo_titles + ['+ Add a TODO'],
-		lambda: todo_list_menu(project),
-		title='BC3 > ' + project.name + ' > ' + todo_list.title)
+		backFunc=lambda: todo_list_menu(project),
+		title='BC3 > ' + project.name + ' > ' + todo_list.title,
+		preview_command=lambda index: todo_preview(todos, index))
 
 	if selected_index is not None:
 		if selected_index == len(todos):
@@ -105,11 +117,10 @@ def todos_menu(todo_list, project):
 			todo_menu(selected_todo, todo_list, project)
 
 
-
 def todo_menu(todo, todo_list, project):
 	selected_index = menu(
 		['Mark as complete', 'Exit'],
-		lambda: todos_menu(todo_list, project),
+		backFunc=lambda: todos_menu(todo_list, project),
 		title='BC3 > ' + project.name + ' > ' + todo_list.title + ' > ' + todo.title)
 
 
