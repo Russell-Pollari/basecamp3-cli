@@ -9,7 +9,7 @@ app = typer.Typer()
 
 def menu(items, backFunc, title = None):
 	items.insert(0, '<--')
-	terminal_menu = TerminalMenu(items, title)
+	terminal_menu = TerminalMenu(items, title, show_search_hint=True)
 	selected_index = terminal_menu.show()
 	if selected_index == 0:
 		backFunc()

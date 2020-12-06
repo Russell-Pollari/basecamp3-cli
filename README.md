@@ -25,6 +25,11 @@ Lists projects and lets user navigate TODOs with keyboard
 `$ sm -p <project-name>`  
 Jump to a specific project by name
 
+#### Navigating menus
+- Navigate menus with arrow keys (or `j/k`) and `enter`
+- Exit with `q` or `<Ctrl>-c`
+- Use `/` to search/filter menu with regex
+
 ## Roadmap
 - edit tasks
 - move tasks
