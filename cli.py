@@ -1,3 +1,4 @@
+
 import typer
 from simple_term_menu import TerminalMenu
 
@@ -22,7 +23,7 @@ def project_menu():
 	projects = get_projects()
 	project_names = [project.name for project in projects]
 
-	selected_index = menu(project_names, exit, title='SM')
+	selected_index = menu(project_names, exit, title='BC')
 
 	if selected_index is not None:
 		selected_project = projects[selected_index]
