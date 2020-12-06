@@ -1,4 +1,4 @@
-## Basecamp TODOS CLI
+# Basecamp TODOs CLI
 
 ## Installation
 1. `source ./install.sh`  
@@ -11,4 +11,14 @@ requires clients_id and client_secret for a Basecamp app
 
 
 ## Usage
-After installation, should be available via `sm` alias
+After installation, should be available via `sm` alias.
+
+`$ sm`  
+Lists projects and lets user navigate TODOs with keyboard
+
+## Roadmap
+- edit tasks
+- move tasks
+- flag to jump to specific project
+- flag to jump to specific task-list
+- browse messages and docs
