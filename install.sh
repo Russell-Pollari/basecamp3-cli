@@ -12,6 +12,6 @@ echo "from cli import app" >> $app_path
 echo "if __name__ == '__main__':" >> $app_path
 echo "	app()" >> $app_path
 
-chmod +x app.py
+chmod +x $app_path
 
 echo "alias sm=$path_to_project$app_path" >> ~/.bashrc

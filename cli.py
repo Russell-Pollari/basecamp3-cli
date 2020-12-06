@@ -2,7 +2,7 @@
 import typer
 from simple_term_menu import TerminalMenu
 
-from bc3 import get_projects, get_todos
+from bc3 import get_projects, get_project_by_name, get_todos
 
 app = typer.Typer()
 
@@ -18,7 +18,6 @@ def menu(items, backFunc, title = None):
 	return selected_index - 1
 
 
-@app.command()
 def project_menu():
 	projects = get_projects()
 	project_names = [project.name for project in projects]
@@ -76,6 +75,18 @@ def todo_menu(todo, todo_list, project):
 		todo.check()
 		new_todo_list = get_todos(todo_list.title, todo.project_id)
 		todos_menu(new_todo_list, project)
+
+
+@app.command()
+def main(project_name: str = typer.Option(None, '--project', '-p', help="Jump to a project by name")):
+	if project_name:
+		project = get_project_by_name(project_name)
+		if not project:
+			print('No project named', project_name)
+			return
+		todo_list_menu(project)
+	else:
+		project_menu()
 
 
 if __name__ == '__main__':
