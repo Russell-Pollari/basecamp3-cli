@@ -19,6 +19,21 @@ def project_preview(projects, index):
 	return project.description
 
 
+def todo_list_preview(todo_lists, index):
+	if int(index) == 0:
+		return None
+
+	try:
+		todo_list = todo_lists[int(index) - 1]
+	except:
+		return None
+
+	todos = [todo for todo in todo_list.list()]
+	todo_titles = ['- [ ] {}'.format(todo.title) for todo in todos]
+
+	return '\n'.join(todo_titles)
+
+
 def menu(
 	items,
 	backFunc,
@@ -62,7 +77,8 @@ def todo_list_menu(project):
 	selected_index = menu(
 		todo_list_titles,
 		project_menu,
-		title='BC3 > ' + project.name)
+		title='BC3 > ' + project.name,
+		preview_command=lambda index: todo_list_preview(todo_lists, index))
 
 	if selected_index is not None:
 		selected_todo_list = todo_lists[selected_index]
