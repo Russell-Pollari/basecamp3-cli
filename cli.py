@@ -7,14 +7,36 @@ from bc3 import get_projects, get_project_by_name, get_todos
 app = typer.Typer()
 
 
-def menu(items, backFunc, title = None):
+def project_preview(projects, index):
+	if int(index) == 0:
+		return None
+
+	try:
+		project = projects[int(index) - 1]
+	except:
+		return None
+
+	return project.description
+
+
+def menu(
+	items,
+	backFunc,
+	preview_command = None,
+	title = None
+):
 	items.insert(0, '<--')
-	terminal_menu = TerminalMenu(items, title, show_search_hint=True)
+	items = ['{} | {}'.format(item, str(index)) for index, item in enumerate(items)]
+
+	terminal_menu = TerminalMenu(items, title, show_search_hint=True, preview_command=preview_command)
 	selected_index = terminal_menu.show()
+
 	if selected_index == 0:
 		backFunc()
+
 	if not selected_index:
 		exit()
+
 	return selected_index - 1
 
 
@@ -22,7 +44,11 @@ def project_menu():
 	projects = get_projects()
 	project_names = [project.name for project in projects]
 
-	selected_index = menu(project_names, exit, title='BC')
+	selected_index = menu(
+		project_names,
+		exit,
+		title='BC',
+		preview_command=lambda index: project_preview(projects, index))
 
 	if selected_index is not None:
 		selected_project = projects[selected_index]
