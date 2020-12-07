@@ -55,7 +55,10 @@ def menu(
 	items.insert(0, '<--')
 	items = ['{} | {}'.format(item, str(index)) for index, item in enumerate(items)]
 
-	terminal_menu = TerminalMenu(items, title, show_search_hint=True, preview_command=preview_command)
+	terminal_menu = TerminalMenu(items, title,
+		show_search_hint=True,
+		preview_command=preview_command,
+		clear_screen=True)
 	selected_index = terminal_menu.show()
 
 	if selected_index == 0:
@@ -108,7 +111,7 @@ def todos_menu(todo_list, project):
 
 	if selected_index is not None:
 		if selected_index == len(todos):
-			title = input('Add a TODO:\n')
+			title = input('BC3 > ' + project.name + ' > ' + todo_list.title + '\n- [ ] ')
 			todo_list.create(title)
 			new_todo_list = get_todos(todo_list.title, todo_list.project_id)
 			todos_menu(new_todo_list, project)
