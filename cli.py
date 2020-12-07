@@ -122,13 +122,17 @@ def todos_menu(todo_list, project):
 
 def todo_menu(todo, todo_list, project):
 	selected_index = menu(
-		['Mark as complete', 'Exit'],
+		['Mark as complete', 'Archive'],
 		backFunc=lambda: todos_menu(todo_list, project),
 		title='BC3 > ' + project.name + ' > ' + todo_list.title + ' > ' + todo.title)
 
 
 	if selected_index == 0:
 		todo.check()
+		new_todo_list = get_todos(todo_list.title, todo.project_id)
+		todos_menu(new_todo_list, project)
+	elif selected_index == 1:
+		todo.archive()
 		new_todo_list = get_todos(todo_list.title, todo.project_id)
 		todos_menu(new_todo_list, project)
 
