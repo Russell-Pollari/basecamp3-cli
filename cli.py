@@ -1,4 +1,5 @@
-
+from bs4 import BeautifulSoup
+import textwrap
 import typer
 from simple_term_menu import TerminalMenu
 
@@ -46,10 +47,25 @@ def todo_preview(todos, index):
 	return todo.description
 
 
+def message_preview(messages, index):
+	if int(index) == 0:
+		return None
+
+	try:
+		message = messages[int(index) - 1]
+	except:
+		return None
+
+	content = BeautifulSoup(message.content, 'html.parser').get_text()
+
+	return textwrap.fill(content, width=200)
+
+
 def menu(
 	items,
 	backFunc = exit,
 	preview_command = None,
+	preview_size = 0.25,
 	title = None
 ):
 	items.insert(0, '<--')
@@ -58,7 +74,8 @@ def menu(
 	terminal_menu = TerminalMenu(items, title,
 		show_search_hint=True,
 		preview_command=preview_command,
-		clear_screen=True)
+		preview_size=preview_size,
+		clear_screen=False)
 	selected_index = terminal_menu.show()
 
 	if selected_index == 0:
@@ -70,7 +87,7 @@ def menu(
 	return selected_index - 1
 
 
-def project_menu():
+def projects_menu():
 	projects = get_projects()
 	project_names = [project.name for project in projects]
 
@@ -81,7 +98,44 @@ def project_menu():
 
 	if selected_index is not None:
 		selected_project = projects[selected_index]
-		todo_list_menu(selected_project)
+		project_menu(selected_project)
+
+
+def project_menu(project):
+	selected_index = menu(
+		['TODOS', 'Message board'],
+		backFunc=projects_menu,
+		title='BC > ' + project.name,
+	)
+
+	if selected_index == 0:
+		todo_list_menu(project)
+	elif selected_index == 1:
+		message_board_menu(project)
+
+
+def message_board_menu(project):
+	messages = [message for message in project.message_board.list()]
+	message_titles = [message.subject for message in messages]
+
+	selected_index = menu(
+		message_titles,
+		title='BC > ' + project.name + ' > Message board',
+		preview_command=lambda index: message_preview(messages, index),
+		backFunc=lambda: project_menu(project))
+
+	if selected_index is not None:
+		selected_message = messages[selected_index]
+		message_menu(selected_message, project)
+
+
+def message_menu(message, project):
+	selected_index = menu(
+		[],
+		title='BC > ' + project.name + ' > Message board > ' + message.subject,
+		preview_command=lambda x: message_preview([message], 1),
+		preview_size=0.95,
+		backFunc=lambda: message_board_menu(project))
 
 
 def todo_list_menu(project):
@@ -90,8 +144,8 @@ def todo_list_menu(project):
 
 	selected_index = menu(
 		todo_list_titles,
-		backFunc=project_menu,
-		title='BC3 > ' + project.name,
+		backFunc=lambda: project_menu(project),
+		title='BC3 > ' + project.name + '> TODOS',
 		preview_command=lambda index: todo_list_preview(todo_lists, index))
 
 	if selected_index is not None:
@@ -106,7 +160,7 @@ def todos_menu(todo_list, project):
 	selected_index = menu(
 		todo_titles + ['+ Add a TODO'],
 		backFunc=lambda: todo_list_menu(project),
-		title='BC3 > ' + project.name + ' > ' + todo_list.title,
+		title='BC3 > ' + project.name + ' > TODOS > ' + todo_list.title,
 		preview_command=lambda index: todo_preview(todos, index))
 
 	if selected_index is not None:
@@ -124,7 +178,7 @@ def todo_menu(todo, todo_list, project):
 	selected_index = menu(
 		['Mark as complete', 'Archive'],
 		backFunc=lambda: todos_menu(todo_list, project),
-		title='BC3 > ' + project.name + ' > ' + todo_list.title + ' > ' + todo.title)
+		title='BC3 > ' + project.name + ' > TODOS > ' + todo_list.title + ' > ' + todo.title)
 
 
 	if selected_index == 0:
@@ -146,7 +200,7 @@ def main(project_name: str = typer.Option(None, '--project', '-p', help="Jump to
 			return
 		todo_list_menu(project)
 	else:
-		project_menu()
+		projects_menu()
 
 
 if __name__ == '__main__':
