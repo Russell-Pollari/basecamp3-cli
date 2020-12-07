@@ -34,4 +34,5 @@ Jump to a specific project by name
 - edit tasks
 - move tasks
 - flag to jump to specific task-list
-- browse messages and docs
+- Browse docs
+- Prettify preview of messages
