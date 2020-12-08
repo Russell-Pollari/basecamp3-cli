@@ -75,7 +75,7 @@ def menu(
 		show_search_hint=True,
 		preview_command=preview_command,
 		preview_size=preview_size,
-		clear_screen=False)
+		clear_screen=True)
 	selected_index = terminal_menu.show()
 
 	if selected_index == 0:
