@@ -58,7 +58,7 @@ def message_preview(messages, index):
 
 	content = BeautifulSoup(message.content, 'html.parser').get_text()
 
-	return textwrap.fill(content, width=200)
+	return textwrap.fill(content, width=100)
 
 
 def menu(
@@ -176,7 +176,7 @@ def todos_menu(todo_list, project):
 
 def todo_menu(todo, todo_list, project):
 	selected_index = menu(
-		['Mark as complete', 'Archive'],
+		['Mark as complete', 'Move', 'Archive'],
 		backFunc=lambda: todos_menu(todo_list, project),
 		title='BC3 > ' + project.name + ' > TODOS > ' + todo_list.title + ' > ' + todo.title)
 
@@ -186,9 +186,28 @@ def todo_menu(todo, todo_list, project):
 		new_todo_list = get_todos(todo_list.title, todo.project_id)
 		todos_menu(new_todo_list, project)
 	elif selected_index == 1:
+		move_todo_menu(todo, todo_list, project)
+	elif selected_index == 2:
 		todo.archive()
 		new_todo_list = get_todos(todo_list.title, todo.project_id)
 		todos_menu(new_todo_list, project)
+
+
+def move_todo_menu(todo, todo_list, project):
+	todo_lists = [list for list in project.todoset.list()]
+	todo_list_titles = [todo_list.title for todo_list in todo_lists]
+
+	selected_index = menu(
+		todo_list_titles,
+		backFunc=lambda: todo_menu(todo, todo_list, project),
+		title='Move from ' + todo_list.title,
+		preview_command=lambda index: todo_list_preview(todo_lists, index))
+
+	todo_lists[selected_index].create(todo.title, description=todo.description)
+	todo.archive()
+
+	new_todo_list = get_todos(todo_list.title, todo.project_id)
+	todos_menu(new_todo_list, project)
 
 
 @app.command()
