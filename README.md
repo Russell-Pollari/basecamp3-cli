@@ -31,8 +31,7 @@ Jump to a specific project by name
 - Use `/` to search/filter menu with regex
 
 ## Roadmap
-- edit tasks
-- move tasks
+- move tasks up and down
 - flag to jump to specific task-list
 - Browse docs
 - Prettify preview of messages
