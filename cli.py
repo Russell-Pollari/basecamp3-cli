@@ -1,3 +1,6 @@
+import sys, tempfile, os
+from subprocess import call
+
 from bs4 import BeautifulSoup
 import textwrap
 import typer
@@ -59,6 +62,18 @@ def message_preview(messages, index):
 	content = BeautifulSoup(message.content, 'html.parser').get_text()
 
 	return textwrap.fill(content, width=100)
+
+
+def edit_todo(title):
+	edited_message = title.encode('utf-8')
+	with tempfile.NamedTemporaryFile(suffix='.tmp') as tf:
+		tf.write(edited_message)
+		tf.flush()
+		call(['vim', tf.name])
+
+		tf.seek(0)
+		edited_message = tf.read().decode('utf-8').strip()
+	return edited_message
 
 
 def menu(
@@ -176,7 +191,7 @@ def todos_menu(todo_list, project):
 
 def todo_menu(todo, todo_list, project):
 	selected_index = menu(
-		['Mark as complete', 'Move', 'Archive'],
+		['Mark as complete', 'Edit', 'Move', 'Archive'],
 		backFunc=lambda: todos_menu(todo_list, project),
 		title='BC3 > ' + project.name + ' > TODOS > ' + todo_list.title + ' > ' + todo.title)
 
@@ -186,8 +201,13 @@ def todo_menu(todo, todo_list, project):
 		new_todo_list = get_todos(todo_list.title, todo.project_id)
 		todos_menu(new_todo_list, project)
 	elif selected_index == 1:
-		move_todo_menu(todo, todo_list, project)
+		todo.content = edit_todo(todo.content)
+		todo.save()
+		new_todo_list = get_todos(todo_list.title, todo.project_id)
+		todos_menu(new_todo_list, project)
 	elif selected_index == 2:
+		move_todo_menu(todo, todo_list, project)
+	elif selected_index == 3:
 		todo.archive()
 		new_todo_list = get_todos(todo_list.title, todo.project_id)
 		todos_menu(new_todo_list, project)
